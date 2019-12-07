@@ -44,8 +44,6 @@ char* getPokemon(char *frase){
 		return "Blastoise";
 	else if(r==9)
 		return "Caterpie";
-
-
 }
 
 int getAnswerC(char *answer){
@@ -56,14 +54,6 @@ int getAnswerC(char *answer){
 		return 31;
 	else
 		return -1;	
-	/*
-	if(strcmp(answer, "y\n" )== 0 ||strcmp(answer,"Y\n") == 0)
-		return 30;
-	else if(strcmp(answer, "n\n") == 0||strcmp(answer,"N\n")== 0)
-		return 31;
-	else
-		return -1;
-	*/
 }
 
 int main(void) {
@@ -108,18 +98,22 @@ int main(void) {
     send(new_sockfd, "Conexion aceptada. Comienza a teclear\n", 38, 0);
     recv_length = recv(new_sockfd, &buffer, 1024, 0);
     while(recv_length > 0) {
-	  
-	  char * pokemon=getPokemon(buffer);
-	  char str[65];
+		
+	  /*obtenemos el pokemon*/
+	  char * pokemon=getPokemon(buffer); 
+	  //mensaje del pokemon
+	  char str[67];
 	  strcpy(str, "El pokemon que se encontro fue: ");
 	  strcat(str,pokemon);
 	  strcat(str, "\nDeseas capturarlo?[Y/N]\n");
-      send(new_sockfd,str,65, 0);
-      recv_length = recv(new_sockfd, &buffer, 1, 0);
+      send(new_sockfd,str,67, 0);
+      recv_length = recv(new_sockfd, &buffer, 3, 0);
       printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
+      
+      /*El usuario quiere atrapar al pokemon?*/
       int result= getAnswerC(buffer);
-      /*Si no ingresa una entrada correcta*/
-      while(result==-1){
+      //Revisando la entrada
+      while(result==-1){//entrada incorrecta
 		memset(buffer, 0, recv_length);
 		char str[54];
 		strcpy(str, "Entrada incorrecta. Vuelve a ingresar una respuesta \n");
@@ -128,15 +122,17 @@ int main(void) {
 		printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
 		result= getAnswerC(buffer);
 	  }
-	  
-	  
+	  /*El usuario quiere atrapar al pokemon*/
 	  if(result==30){
-		  
 		int attempts= rand() % 5;
 		int caught=0;
 		while(attempts>0){
 			caught=rand() % 1;
 			if(caught==0){
+				memset(buffer, 0, recv_length);
+				char a[20];
+				sprintf(a, "Tienes %d intentos\n", attempts);
+				send(new_sockfd,a,20, 0);
 				memset(buffer, 0, recv_length);
 				send(new_sockfd,"No se ha podido capturar. Desea volverlo a intentar?[Y/N]\n",58, 0);
 				recv_length = recv(new_sockfd, &buffer, 2, 0);
@@ -168,12 +164,10 @@ int main(void) {
 		}  
 
 		
-		
+	/*El usuario no quiere atrapar al pokemon*/
 	  }else{
 		char end[65];
-		//strcpy(end, "El total de pokemons capturdos es: ");
 		sprintf(end, "El total de pokemons capturdos es: %d \nSesion terminada\n ", total);
-		//strcat(end, "");
 		send(new_sockfd,end,65, 0);
 		close(new_sockfd);
 	  }
