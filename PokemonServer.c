@@ -11,7 +11,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include<unistd.h>
+#include <string.h> 
+#include <sys/types.h> 
+#include <unistd.h> 
+
+
+#define IP_PROTOCOL 0 
+#define PORT_NO 15050 
+#define NET_BUF_SIZE 32 
+#define cipherKey 'S' 
+#define sendrecvflag 0 
+#define nofile "File Not Found!" 
+
 
 #define PORT 6789  // puerto de conexion
 int total=0;
@@ -47,7 +58,7 @@ char* getPokemon(char *frase){
 }
 
 int getAnswerC(char *answer){
-	printf("bla =%c=",answer[0]);
+	printf("Respuesta:%c",answer[0]);
 	if(answer[0]== 'y' || answer[0] == 'Y')
 		return 30;
 	else if(answer[0]== 'n' || answer[0] == 'N')
@@ -95,7 +106,7 @@ int main(void) {
     if(new_sockfd == -1)
       perror("Error al aceptar la conexion");
     printf("server: Conexion aceptada desde %s desde  %d\n",inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-    send(new_sockfd, "Conexion aceptada. Comienza a teclear\n", 38, 0);
+    send(new_sockfd, "Conexion completada. Presiona cualquier tecla\n", 45, 0);
     recv_length = recv(new_sockfd, &buffer, 1024, 0);
     while(recv_length > 0) {
 		
@@ -125,14 +136,21 @@ int main(void) {
 	  /*El usuario quiere atrapar al pokemon*/
 	  if(result==30){
 		int attempts= rand() % 5;
+		memset(buffer, 0, recv_length);
+		char a[30];
+		sprintf(a, "Tienes %d intentos. SUERTE!!!\n", attempts);
+		send(new_sockfd,a,30, 0);
 		int caught=0;
+		int counter=1;
 		while(attempts>0){
-			caught=rand() % 1;
-			if(caught==0){
-				memset(buffer, 0, recv_length);
-				char a[20];
-				sprintf(a, "Tienes %d intentos\n", attempts);
-				send(new_sockfd,a,20, 0);
+			caught=rand() % 15 +1;
+			printf("cachado  es %d y ese mod 2 es %d\n",caught, caught%2);
+			memset(buffer, 0, recv_length);
+			char str[14];
+			sprintf(str, "Intento %d...\n", counter++);
+			send(new_sockfd,str,14, 0);
+
+			if(caught%3 ==0){
 				memset(buffer, 0, recv_length);
 				send(new_sockfd,"No se ha podido capturar. Desea volverlo a intentar?[Y/N]\n",58, 0);
 				recv_length = recv(new_sockfd, &buffer, 2, 0);
@@ -151,11 +169,10 @@ int main(void) {
 				}
 				
 				char cd[25];
-				sprintf(cd, "Aun te quedan %d intentos\n", attempts-1);
-				send(new_sockfd,cd,25, 0);
+				send(new_sockfd,"Ya no te quedan intentos. Suerte para la proxima!\n",50, 0);
 				
 			}else{
-				send(new_sockfd,"Se logro capturar.\n",19, 0);
+				send(new_sockfd,"Se logro capturar!\n",19, 0);
 				total++;
 				break;
 			}
@@ -166,9 +183,9 @@ int main(void) {
 		
 	/*El usuario no quiere atrapar al pokemon*/
 	  }else{
-		char end[65];
-		sprintf(end, "El total de pokemons capturdos es: %d \nSesion terminada\n ", total);
-		send(new_sockfd,end,65, 0);
+		char end[50];
+		sprintf(end, "El total de pokemons capturdos es: %d \nSesion terminada\n", total);
+		send(new_sockfd,end,50, 0);
 		close(new_sockfd);
 	  }
 	  
