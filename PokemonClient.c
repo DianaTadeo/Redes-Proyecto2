@@ -37,7 +37,8 @@ int main(){
 	printf("===============================================\n"); 
 	printf("Presiona enter para iniciar\n");
 	scanf("a%s", buffer); 
-	send(sockfd, buffer, sizeof(buffer), 0);//envia 'Cualquier tecla'
+	sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
+	//send(sockfd, buffer, sizeof(buffer), 0);//envia 'Cualquier tecla'
 	printf("\n---------Comenzamos!---------\n");
 	int recv_length= recv(sockfd, &buffer, 1024, 0);//inicio de conexion
 	printf("Servidor:  %s\n", buffer);
@@ -50,10 +51,11 @@ int main(){
 		recv_length= recv(sockfd, &buffer, 1024, 0);
 		printf("Servidor:  %s\n", buffer);//Envia el primer pokemon
 		memset(buffer, 0, sizeof(buffer));
-		recv_length= recv(sockfd, &buffer, 1024, 0);
+		//recv_length= recv(sockfd, &buffer, 1024, 0);
 		scanf("%s", buffer);
+		//printf("Se introduce -%s-\n",buffer);
 		int acert=getAnswerC(buffer);
-		printf("acert es %d\n",acert);
+		//printf("acert es %d\n",acert);
 		while(acert==-1){//Si no se ingreso la entrada correcta
 			//recv_length= recv(sockfd, &buffer, buffer_SIZE, 0);//recibe mensaje de error
 			printf("Ingresa nuevamente la entrada\n");
@@ -61,37 +63,47 @@ int main(){
 			//send(sockfd, buffer, buffer_SIZE, 0)//Envia entrada
 			acert=getAnswerC(buffer);
 		}
+		
 		printf("Se envia -%s-\n",buffer);
 		sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
 		memset(buffer, 0, sizeof(buffer));
-		recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);//recibe numero de intentos
+		
 		if(acert ==30){
-			
-			printf("Entra al acert\n");
-			
-			recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);
+			//printf("Entra al acert\n");
+			//recv_length= recvfrom(sockfd, buffer,1024, 0, (struct sockaddr*)&servaddr,sizeof(struct sockaddr));//recibe mensaje de SUERTE
+			recv_length= recv(sockfd, &buffer, 29, 0);//recibe mensaje de SUERTE
 			printf("Servidor:  -%s-\n", buffer);
-			printf("El intento fue:-%s-\n",&buffer[7]);
-			scanf("%s", buffer); 
 			int attempts = (int)buffer[7] - 48;
+			printf("El intento fue:-%d-\n",attempts);
+			
+			
 			while(attempts>0){//Mientras hayan intentos
+				memset(buffer, 0, 1024);
+				recv_length= recv(sockfd, &buffer, 13, 0);//Mensaje de numero de intento
+				printf("Servidor: -%s-\n", buffer);
+				printf("Inicia intentos\n");
 				//Recibe resultado de si fue o no atrapado
-				recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);
-				int caught= (int)buffer[7] - 48;
-				if(caught%2 ==0){//si no fue atrapado
-					recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);//Recibe si se quiere volver a intentar o no
+				memset(buffer, 0, 1024);
+				recv_length= recv(sockfd, &buffer, 12, 0);//Recibe mensaje de capturado?
+				printf("Servidor:  -%s-\n", buffer);
+				int caught= (int)buffer[11] - 48;
+				printf("cachado?:  -%d-\n", caught);
+				if(caught==0){//si no fue atrapado
+					memset(buffer, 0, 1024);
+					recv_length= recv(sockfd, &buffer, 57, 0);//Recibe mensaje si se quiere volver a intentar o no
+					printf("Servidor:  -%s-\n", buffer);
 					memset(buffer, 0, recv_length);
 					scanf("%s", buffer); 
-					sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));//Envia si se quiere volver a intentar o no
 					int acert=getAnswerC(buffer);
 					printf("acert fue %d\n", acert);
 					while(acert==-1){//Si no se ingreso la entrada correcta
-						//recv_length= recv(sockfd, &buffer, buffer_SIZE, 0);//recibe mensaje de error
 						printf("Ingresa nuevamente la entrada\n");
 						scanf("%s", buffer); //Ingresa nueva entrada
-						//send(sockfd, buffer, buffer_SIZE, 0)//Envia entrada
 						acert=getAnswerC(buffer);
 					}
+					printf("Se envia:  -%s-\n", buffer);
+					sendto(sockfd, "YHOLI",5, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));//Envia si se quiere volver a intentar o no
+
 					printf("YOH\n");
 					recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);
 					printf("Servidor:  %s\n", buffer);

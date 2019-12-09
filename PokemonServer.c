@@ -153,9 +153,9 @@ int main(void) {
       //Revisando la entrada
       while(result==-1){//entrada incorrecta
 		memset(buffer, 0, recv_length);
-		char str[54];
-		strcpy(str, "Entrada incorrecta. Vuelve a ingresar una respuesta \n");
-		send(new_sockfd,str,54, 0);
+		//char incorrect[54];
+		//strcpy(str, "Entrada incorrecta. Vuelve a ingresar una respuesta \n");
+		send(new_sockfd,"HOOOOOOOOOOOOOOOO \n",54, 0);
 		recv_length = recv(new_sockfd, buffer, 1, 0);
 		printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
 		result= getAnswerC(buffer);
@@ -163,44 +163,42 @@ int main(void) {
 	  
 	  /*El usuario quiere atrapar al pokemon*/
 	  if(result==30){
-		int attempts= (rand() % 4) +1; //Obtenemos un numero de intentos entre 1 y 5
+		int attempts= rand() % 4; //Obtenemos un numero de intentos entre 1 y 5
 		memset(buffer, 0, recv_length);
-		char a[30];
-		sprintf(a, "Tienes %d intentos. SUERTE!!!\n", attempts);
-		send(new_sockfd,a,30, 0);
-		memset(buffer, 0, recv_length);
-		char in[1];
-		sprintf(in, "%d", attempts);
-		send(new_sockfd,in,30, 0);
+		//char a[30];
+		sprintf(buffer, "Tienes %d intentos. SUERTE!!!\n", attempts);
+		send(new_sockfd,buffer,29, 0);//Envia mensaje de suerte
+		printf("Se envia -%s-\n",buffer);
+		memset(buffer, 0, sizeof(buffer));
 		int caught=0;//Nos permite saber si fue atrapado
 		int counter=1;//Nos permite saber el numero de intento
-		
 		while(attempts>0){//Mientras no se acaben los intentos
 			caught=rand() % 15;
-			printf("cachado  es %d y ese mod 2 es %d\n",caught, caught%2);
-			memset(buffer, 0, recv_length);
-			char str[14];
-			sprintf(str, "Intento %d...\n", counter++);
-			printf("Se envia el primero");
-			send(new_sockfd,str,14, 0);
-			memset(buffer, 0, recv_length);
-			char res_caught[1];
-			sprintf(res_caught, "Tienes %d intentos. SUERTE!!!\n", caught%2);
-			send(new_sockfd,res_caught,1, 0);
+			printf("\nCachado  es %d y ese (mod 2) es %d\n",caught, caught%2);
+			memset(buffer, 0, sizeof(buffer));
+			sprintf(buffer, "Intento %d...", counter++);
+			printf("Se envia el primero -%s-\n",buffer);
+			send(new_sockfd,buffer,13, 0);//Envia mensaje con numero de intento
+			memset(buffer, 0, sizeof(buffer));
+			sprintf(buffer, "Capturado? %d", caught%2);
+			send(new_sockfd,buffer,12, 0);//Envia mensaje de si se logro
+			printf("Se envia -%s-\n",buffer);
 			/*Si no se captura*/
 			if(caught%2 ==0){ //Probabilidad 50/50 de ser atrapado (Si aumenta el modulo, hay mas probabilidad, si se niega, menos)
-				memset(buffer, 0, recv_length);
-				send(new_sockfd,"No se ha podido capturar. Desea volverlo a intentar?[Y/N]\n",58, 0);
-				recv_length = recv(new_sockfd, &buffer, 2, 0);
+				memset(buffer, 0, 1024);
+				send(new_sockfd,"No se ha podido capturar. Desea volverlo a intentar?[Y/N]",57, 0);//Envia mensaje de repetir
+				memset(buffer, 0, 1024);
+				recv_length = recv(new_sockfd, &buffer, 5, 0);//Recibe si se quiere atrapar
+				//recv_length = recv(new_sockfd, &buffer, 3, 0);
 				printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
+				
 				result= getAnswerC(buffer);
 				
 				/*Si no ingresa una entrada correcta*/
 				while(result==-1){
 					memset(buffer, 0, recv_length);
-					char str[54];
-					strcpy(str, "Entrada incorrecta. Vuelve a ingresar una respuesta \n");
-					send(new_sockfd,str,54, 0);
+					strcpy(buffer, "Entrada incorrecta. Vuelve a ingresar una respuesta \n");
+					send(new_sockfd,buffer,54, 0);
 					recv_length = recv(new_sockfd, buffer, 1, 0);
 					printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
 					result= getAnswerC(buffer);
