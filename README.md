@@ -18,5 +18,7 @@ Es necesario primero ejecutar PokemonServer.o para recibir las peticiones y desp
 
 > ./PokemonServer.o
 
-> ./PokemonClient.o
+> ./PokemonClient.o 127.0.0.1
+
+*** NOTA: Es importante tener la terminal a pantalla completa para mejor experiencia ***
 
