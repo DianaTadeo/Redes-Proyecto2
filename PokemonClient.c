@@ -9,8 +9,9 @@
 #define SA struct sockaddr
 int total=0;
 
+/*Funcion auxiliar que devuelve el valor de una respuesta*/
 int getAnswerC(char *answer){
-	printf("Respuesta:%c\n",answer[0]);
+	//printf("Respuesta:%c\n",answer[0]);
 	if(answer[0]== 'y' || answer[0] == 'Y')
 		return 30;
 	else if(answer[0]== 'n' || answer[0] == 'N')
@@ -20,6 +21,7 @@ int getAnswerC(char *answer){
 }
 
 int main(){
+	/*Creo el socket principal de la comunicacion*/
     int sockfd;
     char fname[25];
     int len;
@@ -38,9 +40,21 @@ int main(){
    
 					
     char buffer[1024];
-	printf("\n===============================================\n"); 
-	printf("====B I E N V E N I D O = A = P O K E M O N====\n"); 
-	printf("===============================================\n"); 
+	printf("\n=============================================================================================================================================\n"); 
+	printf("=============================================================================================================================================\n"); 
+	printf (" .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .-----------------.\n");
+	printf ("| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |\n");
+	printf ("| |   ______     | || |     ____     | || |  ___  ____   | || |  _________   | || | ____    ____ | || |     ____     | || | ____  _____  | |\n");
+	printf ("| |  |_   __ \\   | || |   .'    `.   | || | |_  ||_  _|  | || | |_   ___  |  | || ||_   \\  /   _|| || |   .'    `.   | || ||_   \\|_   _| | |\n");
+	printf ("| |    | |__) |  | || |  /  .--.  \\  | || |   | |_/ /    | || |   | |_  \\_|  | || |  |   \\/   |  | || |  /  .--.  \\  | || |  |   \\ | |   | |\n");
+	printf ("| |    |  ___/   | || |  | |    | |  | || |   |  __'.    | || |   |  _|  _   | || |  | |\\  /| |  | || |  | |    | |  | || |  | |\\ \\| |   | |\n");
+	printf ("| |   _| |_      | || |  \\  `--'  /  | || |  _| |  \\ \\_  | || |  _| |___/ |  | || | _| |_\\/_| |_ | || |  \\  `--'  /  | || | _| |_\\   |_  | |\n");
+	printf ("| |  |_____|     | || |   `.____.'   | || | |____||____| | || | |_________|  | || ||_____||_____|| || |   `.____.'   | || ||_____|\\____| | |\n");
+	printf ("| |              | || |              | || |              | || |              | || |              | || |              | || |              | |\n");
+	printf ("| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |\n");
+	printf (" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' \n");
+	printf("=============================================================================================================================================\n"); 
+	printf("=============================================================================================================================================\n"); 
 	printf("Presiona enter para iniciar\n");
 	scanf("a%s", buffer); 
 	sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
@@ -59,56 +73,61 @@ int main(){
 		sendto(sockfd, buffer,  1, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));//envia 'Cualquier tecla'
 		memset(buffer, 0, 1024);
 		recv_length= recv(sockfd, &buffer, 1024, 0);//Recibe el pokemon
-		printf("Servidor:  %s\n", buffer);
+		printf("=============================================================================================================================================\n"); 
+		printf("========Servidor:  %s\n", buffer);
+		printf("=============================================================================================================================================\n"); 
+
 		memset(buffer, 0, sizeof(buffer));
 		//recv_length= recv(sockfd, &buffer, 1024, 0);
 		scanf("%s", buffer);
 		
 		int acert=getAnswerC(buffer);
-		printf("Acert: -%d-\n",acert);
+		
 		//printf("acert es %d\n",acert);
 		while(acert==-1){//Si no se ingreso la entrada correcta
-			//recv_length= recv(sockfd, &buffer, buffer_SIZE, 0);//recibe mensaje de error
 			printf("Ingresa nuevamente la entrada\n");
 			scanf("%s", buffer); //Ingresa nueva entrada
-			//send(sockfd, buffer, buffer_SIZE, 0)//Envia entrada
 			acert=getAnswerC(buffer);
 		}
 		
-		printf("Se envia -%s-\n",buffer);
+		
 		sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
 		memset(buffer, 0, sizeof(buffer));
-		printf("Enseguida se mostrara si lo lograste\n");
+		printf("Enseguida se mostrara una respuesta\n");
 		if(acert ==30){
-			//printf("Entra al acert\n");
-						recv_length= recv(sockfd, &buffer, 29, 0);//recibe mensaje de SUERTE
-			printf("Servidor:  -%s-\n", buffer);
+			recv_length= recv(sockfd, &buffer, 29, 0);//recibe mensaje de SUERTE
+			printf("=============================================================================================================================================\n"); 
+			printf("========Servidor:  %s\n", buffer);
+			printf("=============================================================================================================================================\n"); 
 			int attempts = (int)buffer[7] - 48;
-			printf("El intento fue:-%d-\n",attempts);
+			
 			
 			while(attempts>0){//Mientras hayan intentos
 				memset(buffer, 0, 1024);
 				recv_length= recv(sockfd, &buffer, 13, 0);//Mensaje de numero de intento
-				printf("Servidor: -%s-\n", buffer);
-				printf("Inicia intentos\n");
+				printf("=============================================================================================================================================\n"); 
+				printf("========Servidor:  %s\n", buffer);
+				printf("=============================================================================================================================================\n"); 
 				//Recibe resultado de si fue o no atrapado
 				memset(buffer, 0, 1024);
 				recv_length= recv(sockfd, &buffer, 12, 0);//Recibe mensaje de capturado?
-				printf("Servidor:  -%s-\n", buffer);
+				
 				int caught= (int)buffer[11] - 48;
-				printf("Capturado?:  -%d-\n", caught);
 				
 				if(caught==0){//si no fue atrapado
+					printf("No fue atrapado :(\n", caught);
 					memset(buffer, 0, 1024);
 					recv_length= recv(sockfd, &buffer, 57, 0);//Recibe mensaje si se quiere volver a intentar o no
-					printf("Servidor:  -%s-\n", buffer);
-					//memset(buffer, 0, recv_length);
+					printf("=============================================================================================================================================\n"); 
+					printf("========Servidor:  %s\n", buffer);
+					printf("=============================================================================================================================================\n"); 
 					scanf("%s", buffer); 
-					printf("Se envia:  -%s-\n", buffer);
 					sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));//Se envia mensaje de si se quiere volver a intentar
-					printf("YOH\n");
 					recv_length= recv(sockfd, &buffer, sizeof(buffer), 0);//Recibe cualquier respuesta
-					printf("Servidor:  %s\n", buffer);
+					printf("=============================================================================================================================================\n"); 
+					printf("========Servidor:  %s\n", buffer);
+					printf("=============================================================================================================================================\n"); 
+
 					attempts--;
 				}else{//Si fue atrapado
 					total++;
@@ -123,11 +142,14 @@ int main(){
 					serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	
 					recv_length= recv(sockfd, &buffer, 12, 0);
-					printf("Servidor:  %s\n", buffer);
+					printf("=============================================================================================================================================\n"); 
+					printf("========Servidor:  %s\n", buffer);
+					printf("=============================================================================================================================================\n"); 
+
 					memset(buffer, 0, recv_length);
 					printf("Ingresa cuelquier tecla para recibirlo\n");
 					scanf("%s", buffer); 
-					printf("\n---------Data Received---------\n"); 
+					printf("\n---------Recibiendo Pokemon---------\n"); 
 					
 					b=connect(sfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 					if (b==-1) {
@@ -138,7 +160,6 @@ int main(){
 					char nombre[3];
 					sprintf(nombre, "Capturados/%d.png",total);
 					FILE* fp = fopen( nombre, "wb");
-					printf("Abro textito1.txt\n"); 
 					tot=0;
 					if(fp != NULL){
 						while( (b = recv(sfd, rbuff, 60000,0))> 0 ) {
@@ -153,18 +174,23 @@ int main(){
 					}else{
 						printf("Error File\n");
 					}
-					printf("Cerrando\n Presiona\n");
+					printf("=============================================================================================================================================\n"); 
+
+			
+					printf("TIENES UN NUEVO POKEMON!\n Revisa la carpeta de 'Atrapados' para verlo\n");
+					printf("=============================================================================================================================================\n\n"); 
+
+					printf("Envia 2 veces una tecla para continuar\n");
 					close(sfd);
 					break; 
 				}
-			printf("Cerrando\n Presione cualquier otra tecla\n");
+			printf("Cerrando\n Envia cualquier otra tecla\n");
 			}
 		}else{//Si no acepta
 			recv_length= recv(sockfd, &buffer, 72,0);
-			printf("Servidor:  %s\n", buffer);
-			//scanf("%s", buffer); 
-			//printf("Se envia:  -%s-\n", buffer);
-			//sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
+			printf("=============================================================================================================================================\n"); 
+			printf("========Servidor:  %s\n", buffer);
+			printf("=============================================================================================================================================\n"); 
 		}
 
     scanf("%s-", buffer);

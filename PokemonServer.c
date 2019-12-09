@@ -142,7 +142,7 @@ int main(void) {
       perror("Error al aceptar la conexion");
     recv_length = recv(new_sockfd, &buffer, 1024, 0);
     printf("server: Conexion aceptada desde %s desde  %d\n",inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
-    send(new_sockfd, "Presiona cualquier tecla para comenzar a atraparlos\n", 76, 0);
+    send(new_sockfd, "Presiona cualquier tecla para comenzar a atraparlos", 76, 0);
     while(recv_length > 0) {
 	  
 	  recv_length = recv(new_sockfd, &buffer, 1, 0);
@@ -151,7 +151,7 @@ int main(void) {
 	  char * pokemon=getPokemon(buffer); 
 	  //mensaje del pokemon
 	  memset(buffer, 0, recv_length);
-	  sprintf(buffer, "El pokemon que se encontro fue: %s\nDeseas capturarlo?[Y/N]\n", pokemon);
+	  sprintf(buffer, "El pokemon que se encontro fue: %s\nDeseas capturarlo?[Y/N]", pokemon);
       send(new_sockfd,buffer,1024, 0);
       memset(buffer, 0, sizeof(buffer));
       recv_length = recv(new_sockfd, &buffer, 3, 0);//Recibe la respuesta del cliente
@@ -160,21 +160,13 @@ int main(void) {
       /*El usuario quiere atrapar al pokemon?*/
       int result= getAnswerC(buffer);
       printf("Entrada -%s-\n",buffer);
-      //Revisando la entrada
-      //while(result==-1){//entrada incorrecta
-	//	memset(buffer, 0, recv_length);
-		//send(new_sockfd,"Entrada Incorrecta, vuelve e intentarlo\n",39, 0);
-		//recv_length = recv(new_sockfd, buffer, 1, 0);
-		//printf("RECV: %d bytes\nENTRADA: -%s-\n", recv_length, buffer);
-		//result= getAnswerC(buffer);
-	  //}
 	  
 	  /*El usuario quiere atrapar al pokemon*/
 	  if(result==30){
 		int attempts= rand() % 5; //Obtenemos un numero de intentos entre 1 y 5
 		memset(buffer, 0, recv_length);
 		//char a[30];
-		sprintf(buffer, "Tienes %d intentos. SUERTE!!!\n", attempts);
+		sprintf(buffer, "Tienes %d intentos. SUERTE!!!", attempts);
 		send(new_sockfd,buffer,29, 0);//Envia mensaje de suerte
 		printf("Se envia -%s-\n",buffer);
 		memset(buffer, 0, sizeof(buffer));
