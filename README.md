@@ -4,6 +4,7 @@ Pokemon protocol
 ## Para compilar
 
 > gcc PokemonServer.c -o PokemonServer.o
+
 > gcc PokemonClient.c -o PokemonClient.o
 
 ## Antes de ejecutar
@@ -16,5 +17,6 @@ No es necesario que PokemonServer.c y PokemonClient.c esten en la misma ubicaciÃ
 Es necesario primero ejecutar PokemonServer.o para recibir las peticiones y despuÃ©s PokemonClient.o
 
 > ./PokemonServer.o
+
 > ./PokemonClient.o
 
