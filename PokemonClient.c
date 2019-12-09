@@ -20,7 +20,7 @@ int getAnswerC(char *answer){
 		return -1;	
 }
 
-int main(){
+int main(int argc, char *argv[]){
 	/*Creo el socket principal de la comunicacion*/
     int sockfd;
     char fname[25];
@@ -29,15 +29,12 @@ int main(){
     sockfd=socket(AF_INET,SOCK_STREAM,0);
     bzero(&servaddr,sizeof(servaddr));
     servaddr.sin_family=AF_INET;
-    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_addr.s_addr=inet_addr(argv[1]);
     servaddr.sin_port=htons(6789);
     char el[4];
 	sprintf(el, "%d", 6789);
     inet_pton(AF_INET,el,&servaddr.sin_addr);
     connect(sockfd,(SA*)&servaddr,sizeof(servaddr));
-    
-    
-   
 					
     char buffer[1024];
 	printf("\n=============================================================================================================================================\n"); 
@@ -77,7 +74,7 @@ int main(){
 		printf("========Servidor:  %s\n", buffer);
 		printf("=============================================================================================================================================\n"); 
 
-		memset(buffer, 0, sizeof(buffer));
+		memset(buffer, 0, 1024);
 		//recv_length= recv(sockfd, &buffer, 1024, 0);
 		scanf("%s", buffer);
 		
@@ -92,7 +89,7 @@ int main(){
 		
 		
 		sendto(sockfd, buffer,  1024, 0, (struct sockaddr*)&servaddr,sizeof(servaddr));
-		memset(buffer, 0, sizeof(buffer));
+		memset(buffer, 0, 1024);
 		printf("Enseguida se mostrara una respuesta\n");
 		if(acert ==30){
 			recv_length= recv(sockfd, &buffer, 29, 0);//recibe mensaje de SUERTE
@@ -139,7 +136,7 @@ int main(){
 					sfd = socket(AF_INET, SOCK_STREAM, 0);
 					serv_addr.sin_family = AF_INET;
 					serv_addr.sin_port = htons(5000);
-					serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+					serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
 	
 					recv_length= recv(sockfd, &buffer, 12, 0);
 					printf("=============================================================================================================================================\n"); 
@@ -187,10 +184,11 @@ int main(){
 			printf("Cerrando\n Envia cualquier otra tecla\n");
 			}
 		}else{//Si no acepta
-			recv_length= recv(sockfd, &buffer, 72,0);
+			recv_length= recv(sockfd, &buffer, 36,0);
 			printf("=============================================================================================================================================\n"); 
 			printf("========Servidor:  %s\n", buffer);
 			printf("=============================================================================================================================================\n"); 
+			printf("Envia 2 veces una tecla para continuar\n");
 		}
 
     scanf("%s-", buffer);
